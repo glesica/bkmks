@@ -10,7 +10,8 @@ import
 type
     Action = enum
         none,
-        addBkmk
+        addBkmk,
+        deleteBkmk
 
 proc echoHelp() =
     echo "help message"
@@ -39,6 +40,7 @@ for kind, key, val in getopt():
         of "version", "v": echoVersion()
         of "tag", "t": tags.add(val)
         of "add", "a": action = addBkmk
+        of "delete", "d": action = deleteBkmk
         else: echoArgError(key)
     of cmdEnd: discard
 
@@ -48,6 +50,9 @@ of none:
 of addBkmk:
     for url in urls:
         addBookmark(db, url, tags)
+of deleteBkmk:
+    for url in urls:
+        deleteBookmarkByUrl(db, url)
 
 db.close()
 

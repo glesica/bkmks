@@ -19,8 +19,8 @@ proc initDb(db: DbConn) =
     db.exec(sql"""
         CREATE TABLE IF NOT EXISTS tags (
             value VARCHAR(64) NOT NULL,
-            url_id INTEGER NOT NULL,
-            FOREIGN KEY(url_id) REFERENCES urls(id))""")
+            url_id INTEGER NOT NULL REFERENCES urls(id)
+                ON UPDATE CASCADE ON DELETE CASCADE)""")
     db.exec(
         sql"CREATE INDEX IF NOT EXISTS tags_value_idx ON tags(value)")
     db.exec(
@@ -36,7 +36,12 @@ proc openDb*(path: string): DbConn =
     return db
 
 proc addBookmark*(db: DbConn, url: string, tags: seq[string]) =
-    let domain = parseUri(url).hostname
+    let hostname = parseUri(url).hostname
+    let domain =
+        if startsWith(hostname, "www."):
+            replace(hostname, "www.", "")
+        else:
+            hostname
     db.exec(sql"""
         INSERT OR IGNORE INTO
         urls (content, domain) VALUES (?, ?)""",
@@ -50,6 +55,22 @@ proc addBookmark*(db: DbConn, url: string, tags: seq[string]) =
             tag, id)
     db.exec(sql"COMMIT")
 
+proc deleteBookmarkByUrl*(db: DbConn, url: string) =
+    db.exec(sql"""
+        DELETE FROM urls WHERE content = ?""", url)
+
+proc deleteBookmarkById*(db: DbConn, id: int) =
+    db.exec(sql"""
+        DELETE FROM urls WHERE id = ?""", id)
+
+proc deleteBookmarksByDomain*(db: DbConn, domain: string) =
+    db.exec(sql"""
+        DELETE FROM urls WHERE domain = ?""", domain)
+
+proc deleteBookmarksByTags*(db: DbConn, tags: seq[string]) =
+    let query = sql"""
+        SELECT"""
+
 proc echoBookmarks*(db: DbConn, limit: int = 100) =
     let query = sql"""
         SELECT urls.id, urls.content FROM urls
@@ -59,7 +80,7 @@ proc echoBookmarks*(db: DbConn, limit: int = 100) =
 
 proc echoBookmarksForDomain*(db: DbConn, domain: string) =
     let query = sql"""
-        SELECT urls.id, urls.content FROM urls 
+        SELECT urls.id, urls.content FROM urls
         WHERE urls.domain = ?"""
     for row in db.rows(query, domain):
         echoBookmarkRow(row)
