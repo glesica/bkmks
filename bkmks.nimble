@@ -1,12 +1,13 @@
-[Package]
-name          = "bkmks"
+# Package
+
 version       = "0.1.0"
 author        = "George Lesica"
-description   = "Web bookmarks manager for the CLI."
-license       = "GPL3"
-
-bin           = "bkmks"
+description   = "A command line bookmark manager"
+license       = "GPL-3.0"
 srcDir        = "src"
+bin           = @["bkmks"]
 
-[Deps]
-Requires: "nim >= 0.10.0"
+
+# Dependencies
+
+requires "nim >= 0.19.0"

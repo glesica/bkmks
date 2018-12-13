@@ -1,6 +1,6 @@
 #!/bin/sh
 
-rm ~/.bkmksdb
+rm -f ~/.bkmksdb
 
-./bkmks -a -t=tag0 -t=tag1 http://google.com
-./bkmks -a -t=tag0 -t=tag2 http://www.yahoo.com
+./bkmks add -t=tag0 -t=tag1 http://google.com
+./bkmks add -t=tag0 -t=tag2 http://www.yahoo.com

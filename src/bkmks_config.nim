@@ -1,6 +1,6 @@
 import os
 
-const DbPathEnv = "BKMKS_DB_PATH"
+const DbPathEnv = "BKMKS_DB"
 
 proc defaultDbPath(): string =
     getHomeDir() / ".bkmksdb"
@@ -10,4 +10,3 @@ proc getDbPath*(): string =
         getEnv(DbPathEnv)
     else:
         defaultDbPath()
-
