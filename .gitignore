@@ -3,3 +3,7 @@
 
 bkmks
 nimcache/
+
+tests/*
+!tests/*.nim
+!tests/*.cfg
